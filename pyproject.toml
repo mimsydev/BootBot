@@ -1,0 +1,12 @@
+[project]
+name = "BootBot"
+version = "0.1.0"
+readme = "README.md"
+requires = ">=3.13"
+authors = [
+    {name = "Johnathan Rhoades", email="jrhoades7989@gmail.com"}
+]
+dependencies = [
+"google-genai==1.12.1",
+"python-dotenv==1.1.0"
+]
