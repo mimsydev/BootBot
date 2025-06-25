@@ -1,6 +1,6 @@
 import sys
 from google.genai import types
-from runprompt import run_prompt
+from funcitons.runprompt import run_prompt
 from functions.get_files_info import get_files_info
 
 def main():
