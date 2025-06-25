@@ -1,28 +1,42 @@
-import os
-import typing
 import sys
-from dotenv import load_dotenv
-from google import genai
+from google.genai import types
+from runprompt import run_prompt
+from functions.get_files_info import get_files_info
 
 def main():
     args: list[str] = sys.argv
-    if len(args) == 1:
+    if len(args) <= 1:
         print("No prompt was provided. Please provide a prompt.")
         sys.exit(1)
-    load_dotenv()
-    api_key: str | None = os.environ.get("GEMINI_API_KEY")
-    if api_key == None:
-        print("API KEY COULD NOT BE FOUND")
-        return
-    client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(model="gemini-2.0-flash-001",\
-                                             contents="Why is Boot.dev such a great place to learn \
-                                             backend development? Use paragraph.")
+
+    is_verbose = False
+    if "--verbose" in args:
+        args.remove("--verbose")
+        is_verbose = True
+    if "-v" in args:
+        args.remove("-v")
+        is_verbose = True
+
+    user_prompt = args[1]
+
+    messages: list[types.ContentUnion] = [
+        types.Content(role="user", parts=[types.Part(text=user_prompt)])
+    ]
+
+    response = run_prompt(messages)
+
+    if response == None:
+        print("There was an error generating the response")
+
     print(response.text)
+
     if response.usage_metadata == None:
         print("Usage data was unavailable")
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+
+    if is_verbose:
+        print(f"User prompt: {user_prompt}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 
 
