@@ -1,8 +1,12 @@
 import os
+from helpers import validate_path, PathAction
 
 def get_files_info(working_directory: str, directory: str | None = None) -> str:
     try:
-        
+        err, dir_path = validate_path(working_directory, directory, PathAction.CHECK_DIR)
+        if err != None:
+            return err
+
         dir_contents: list[str] = os.listdir(dir_path)
         return_list: list[str] = []
 

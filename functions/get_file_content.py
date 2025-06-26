@@ -1,20 +1,14 @@
 import os
+from helpers import validate_path, PathAction
 MAX_CHARS = 10000
 
 def get_file_content(working_directory: str, file_path: str) -> str:
     try:
-        working_directory = os.path.join(".", working_directory)
-        if not os.path.exists(working_directory):
-            return f"Error:  There is a problem with the working directory: {working_directory}"
-        
-        file_path = file_path.lstrip(os.path.sep)
-        abs_path = os.path.abspath(working_directory)
-        full_file_path = os.path.join(abs_path, file_path)
-
-        if not os.path.exists(full_file_path):
-            return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
-        if not os.path.isfile(full_file_path):
-            return f'Error: File not found or is not a regular file: "{file_path}"'
+        err, full_file_path = validate_path(working_directory, file_path, PathAction.READ_FILE)
+        if err != None:
+            return err
+        if full_file_path == None:
+            return 'Error: Unexpected empty path'
 
         with open(full_file_path, "r") as f:
             file_content_string = f.read(MAX_CHARS)
