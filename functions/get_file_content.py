@@ -1,5 +1,5 @@
 import os
-from helpers import validate_path, PathAction
+from functions.helpers import validate_path, PathAction
 MAX_CHARS = 10000
 
 def get_file_content(working_directory: str, file_path: str) -> str:

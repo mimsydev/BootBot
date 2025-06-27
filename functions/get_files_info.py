@@ -1,5 +1,5 @@
 import os
-from helpers import validate_path, PathAction
+from functions.helpers import validate_path, PathAction
 
 def get_files_info(working_directory: str, directory: str | None = None) -> str:
     try:
