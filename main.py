@@ -1,9 +1,5 @@
 import sys
-from google.genai import types
-from ai_integration.call_function import call_function
 from ai_integration.get_content import get_content
-from ai_integration.runprompt import run_prompt
-from functions.get_files_info import get_files_info
 
 def main():
     args: list[str] = sys.argv
@@ -21,6 +17,7 @@ def main():
 
     user_prompt = args[1]
 
+    print("Calling get_content")
     content_response = get_content(user_prompt, is_verbose)
     if isinstance(content_response, Exception):
         print(str(content_response))

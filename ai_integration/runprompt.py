@@ -1,4 +1,5 @@
 import os
+from typing import Union
 from google import genai
 from dotenv import load_dotenv
 from google.genai import types
@@ -16,8 +17,8 @@ When a user asks a question or makes a request, make a function call plan. You c
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
 
-def run_prompt(messages: list[types.ContentUnion]) ->\
-    types.GenerateContentResponse | None:
+def run_prompt(messages: list[types.ContentUnion]) -> \
+    Union[types.GenerateContentResponse, Exception]:
     schema_get_files_info = types.FunctionDeclaration(
         name="get_files_info",
         description=("Lists files in the specified directory along with their "
@@ -104,9 +105,8 @@ def run_prompt(messages: list[types.ContentUnion]) ->\
     )
     load_dotenv()
     api_key: str | None = os.environ.get("GEMINI_API_KEY")
-    if api_key == None:
-        print("API KEY COULD NOT BE FOUND")
-        return
+    if api_key is None:
+        return Exception("API KEY COULD NOT BE FOUND")
 
     client = genai.Client(api_key=api_key)
     return client.models.generate_content(model="gemini-2.0-flash-001",
