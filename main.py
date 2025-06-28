@@ -1,7 +1,8 @@
 import sys
 from google.genai import types
-from functions.call_function import call_function
-from functions.runprompt import run_prompt
+from ai_integration.call_function import call_function
+from ai_integration.get_content import get_content
+from ai_integration.runprompt import run_prompt
 from functions.get_files_info import get_files_info
 
 def main():
@@ -20,42 +21,16 @@ def main():
 
     user_prompt = args[1]
 
-    messages: list[types.ContentUnion] = [
-        types.Content(role="user", parts=[types.Part(text=user_prompt)])
-    ]
-
-    response = run_prompt(messages)
-
-    if response == None:
-        print("There was an error generating the response")
-
-    assert not response is None
-
-    if not response.text is None and len(response.text) > 0:
-        print(response.text)
-    
-    call_result = None
-    if response.function_calls != None:
-        call_result = call_function(response.function_calls[0], is_verbose)
-
-    if isinstance(call_result, Exception) or call_result is None:
-        print("There was an error executing a tool call")
-
-    assert not call_result is None
-
-    if call_result.parts[0].function_response.response is None:
-        print("There was no response from the tool call")
-
-    if response.usage_metadata == None:
-        print("Usage data was unavailable")
-
-    assert response.usage_metadata != None
+    content_response = get_content(user_prompt, is_verbose)
+    if isinstance(content_response, Exception):
+        print(str(content_response))
+        sys.exit(1)
 
     if is_verbose:
         print(f"User prompt: {user_prompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        print(f"-> {call_result.parts[0].function_response.response['result']}")
+        print(f"Prompt tokens: {content_response.prompt_token_count}")
+        print(f"Response tokens: {content_response.candidates_token_count}")
+        print(f"-> {content_response.result}")
 
 
 
