@@ -1,6 +1,6 @@
 import sys
 from google.genai import types
-from funcitons.runprompt import run_prompt
+from functions.runprompt import run_prompt
 from functions.get_files_info import get_files_info
 
 def main():
@@ -28,10 +28,20 @@ def main():
     if response == None:
         print("There was an error generating the response")
 
-    print(response.text)
+    assert response != None
+
+    if response.text != None and len(response.text) > 0:
+        print(response.text)
+    
+    if response.function_calls != None:
+        for function_call_part in response.function_calls:
+            print((f'Calling function: {function_call_part.name}'
+                f'({function_call_part.args})'))
 
     if response.usage_metadata == None:
         print("Usage data was unavailable")
+
+    assert response.usage_metadata != None
 
     if is_verbose:
         print(f"User prompt: {user_prompt}")

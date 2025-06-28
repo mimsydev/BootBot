@@ -1,7 +1,7 @@
 import subprocess
 from functions.helpers import validate_path, PathAction
 
-def run_python_file(working_directory: str, file_path: str) -> str:
+def run_python_file(working_directory: str, file_path: str, *args) -> str:
     full_path = validate_path(working_directory, file_path, PathAction.RUN_FILE)
     if isinstance(full_path, Exception):
         msg = str(full_path)
@@ -10,18 +10,19 @@ def run_python_file(working_directory: str, file_path: str) -> str:
         return f'Error: {msg}'
     
     try:
-        result = subprocess.run(['python3', full_path], timeout=30, \
-                                capture_output=True, text=True, check=True)
+        result = subprocess.run(['python3', full_path]+[str(arg) for arg in args],
+                                timeout=30, capture_output=True, text=True,
+                                check=True)
         msg = str()
         if len(result.stdout) > 0:
-            msg += f'STDOUT: {result.stdout} '
+            msg += f'STDOUT:\n{result.stdout} '
         if len(result.stderr) > 0:
-            msg += f'STDERR: {result.stderr}'
+            msg += f'STDERR:\n{result.stderr}'
         if len(msg) == 0:
             return 'No output produced'
         return msg
     except subprocess.CalledProcessError as exex:
-        error_string = f'STDERR: {exex.stderr}'
+        error_string = f'STDERR:\n{exex.stderr}'
         if exex.returncode > 0:
             error_string += f' Process exited with code {exex.returncode}'
         return error_string
