@@ -10,18 +10,20 @@ class PathAction(Enum):
     WRITE_FILE = 3
     RUN_FILE = 4
 
+# There are a number of different validation types that need to be handled. This
+# will invoke the appropriate validator based on the PathAction
 def validate_path(working_directory: str, sub_path:str,  path_action: PathAction)\
     -> Union[str, Exception]:
     try:
         full_path = _initial_validation(working_directory, sub_path)
         if isinstance(full_path, Exception):
             return full_path
-        path_validator = get_path_validator(path_action)
+        path_validator = _get_path_validator(path_action)
         return path_validator(full_path, working_directory, sub_path)
     except Exception as e:
         return e
 
-def get_path_validator(path_action: PathAction) -> FunctionType:
+def _get_path_validator(path_action: PathAction) -> FunctionType:
     match path_action:
         case PathAction.CHECK_DIR:
             return _validate_dir
@@ -32,17 +34,19 @@ def get_path_validator(path_action: PathAction) -> FunctionType:
         case PathAction.RUN_FILE:
             return _validate_file_run
 
+# There is some basic validation that is common to all path actions
 def _initial_validation(working_directory: str, sub_path: str) \
     -> Union[str,Exception]:
     rel_working_directory = os.path.join(".", working_directory)
     if not os.path.exists(rel_working_directory):
         return Exception(f'Error:  There is a problem with the working '
-                'directory: "{working_directory}"')
+                f'directory: "{working_directory}"')
 
     abs_path = os.path.abspath(rel_working_directory)
     full_path = os.path.join(abs_path, sub_path)
     return full_path
 
+# All the individual validators to invoke based on the PathAction
 def _validate_dir(full_path: str, working_directory: str, sub_path: str)\
     -> Union[str,Exception]:
     if not working_directory in full_path or '..' in full_path:
@@ -61,7 +65,6 @@ def _validate_file_read(full_path: str, working_directory: str, sub_path: str)\
         return Exception((f'Error: File not found or is not a regular file:'
                 f' "{sub_path}"'))
     return (full_path)
-
 
 def _validate_file_write(full_path: str, working_directory: str, sub_path: str)\
     -> Union[str,Exception]:
