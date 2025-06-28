@@ -19,6 +19,7 @@ def validate_path(working_directory: str, sub_path:str,  path_action: PathAction
         if isinstance(full_path, Exception):
             return full_path
         path_validator = _get_path_validator(path_action)
+        working_directory = working_directory.lstrip('.')
         return path_validator(full_path, working_directory, sub_path)
     except Exception as e:
         return e
