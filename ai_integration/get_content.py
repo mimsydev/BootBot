@@ -57,10 +57,19 @@ def get_content(user_prompt: str, is_verbose: bool) -> Union[AiResponse, Excepti
                                 prompt_token_count=pt_count,
                                 candidates_token_count=ct_count
                                 )
+        if is_verbose:
+            print('===========================================================')
+            print(f"User prompt: {user_prompt}")
+            print(f"Prompt tokens: {ai_response.prompt_token_count}")
+            print(f"Response tokens: {ai_response.candidates_token_count}")
+
         if response.function_calls is None:
             ai_response.result = 'Empty response' if response.text is None \
                                     else response.text
             break
+        if is_verbose:
+            print(f"-> {ai_response.result}")
+            print('===========================================================')
 
     if ai_response is None:
         return Exception('No response was generate')

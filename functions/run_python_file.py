@@ -1,7 +1,7 @@
 import subprocess
 from functions.helpers import validate_path, PathAction
 
-def run_python_file(working_directory: str, file_path: str, *args) -> str:
+def run_python_file(working_directory: str, file_path: str, args: list[str]) -> str:
     full_path = validate_path(working_directory, file_path, PathAction.RUN_FILE)
     if isinstance(full_path, Exception):
         msg = str(full_path)
@@ -10,9 +10,8 @@ def run_python_file(working_directory: str, file_path: str, *args) -> str:
         return f'Error: {msg}'
     
     try:
-        result = subprocess.run(['python3', full_path]+[str(arg) for arg in args],
-                                timeout=30, capture_output=True, text=True,
-                                check=True)
+        result = subprocess.run(['python3', full_path]+args, timeout=30,
+                                capture_output=True, text=True, check=True)
         msg = str()
         if len(result.stdout) > 0:
             msg += f'STDOUT:\n{result.stdout} '

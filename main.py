@@ -23,11 +23,9 @@ def main():
         print(str(content_response))
         sys.exit(1)
 
-    if is_verbose:
-        print(f"User prompt: {user_prompt}")
-        print(f"Prompt tokens: {content_response.prompt_token_count}")
-        print(f"Response tokens: {content_response.candidates_token_count}")
-        print(f"-> {content_response.result}")
+    print('===========================================================')
+    print(f"-> {content_response.result}")
+    print('===========================================================')
 
 
 
